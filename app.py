@@ -27,12 +27,7 @@ from sklearn.svm import SVC
 st.title('Atrial Fibrilation Detector')
 
 """
-	Using the dataset provided by the 2020 Physionet Challenge we've developed an Atrial Fibrilation Detector trained to
-	identify AF diagnosed patiences from a dataset containing patients with different pathologies like: PAC, RBBB, I-AVB,
-	PVC, LBBB, STD, STE and healthy individuals.
-
-	Although data from 12-lead ECG was provided, for this first analysis we've only used the lead 2 data and we've processed
-	the signals in order to create a dataframe consisting of features we believe will help us classify.
+	A study on Wisconsing's Breast Cancer Dataset
 """
 
 @st.cache
