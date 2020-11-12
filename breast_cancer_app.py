@@ -24,7 +24,7 @@ from sklearn.neighbors import KNeighborsClassifier
 from sklearn.svm import SVC
 
 
-st.title('Atrial Fibrilation Detector')
+st.title('Breast Cancer Classifier')
 
 """
 	A study on Wisconsing's Breast Cancer Dataset
@@ -49,6 +49,17 @@ def filter_df(df_raw, q):
 df = load_data()
 st.write(df.describe())
 df_raw = df.drop(['Unnamed: 32', 'id'], axis=1).copy()
+
+st.header("Target Class Representation in the Dataset")
+fig_cor = plt.figure(figsize=(16,10))
+sns.set_theme(style="ticks")
+sns.countplot(x='diagnosis', data = df_raw)
+st.pyplot(fig_cor, clear_figure=True)
+"""
+There's an under representation of the malign class in the dataset. Therefore we will use F1 score instead
+of accuracy.
+"""
+
 
 st.header("Dendrogram")
 corr = np.round(spearmanr(df_raw.drop('diagnosis', axis=1)).correlation, 4)
@@ -106,7 +117,7 @@ df_pca = pca.fit_transform(df_scal)
 xpca = pd.DataFrame(df_pca)
 
 sns.set_context("talk", font_scale=0.7)
-plt.figure(figsize=(15,6))
+fig = plt.figure(figsize=(15,6))
 plt.scatter(xpca.loc[(df_raw.diagnosis == 'M').ravel(),0],xpca.loc[(df_raw.diagnosis == 'M').ravel(),1], alpha = 0.3, label = 'M')
 plt.scatter(xpca.loc[(df_raw.diagnosis == 'B').ravel(),0],xpca.loc[(df_raw.diagnosis == 'B').ravel(),1], alpha = 0.3, label = 'B')
 plt.xlabel('Principal Component 1')
@@ -114,7 +125,7 @@ plt.ylabel('Principal Component 2')
 plt.title('Principal Component Analysis before feature selection')
 plt.legend(loc='upper right')
 plt.tight_layout()
-st.pyplot(clear_figure=True)
+st.pyplot(fig, clear_figure=True)
 
 
 
@@ -182,21 +193,9 @@ X = X.drop('index', axis=1)
 print("Breast Data Model")
 X[:10]
 
-import plotly.graph_objects as go
-fig = go.Figure()
-fig.add_trace(
-	go.Bar(
-	    name='Control',
-	    y=X['preds'][:50],
-	    error_y=dict(
-	            type='data',
-	            symmetric=False,
-	            array=X['upper'][:50],
-	            arrayminus=X['lower'][:50]
-    	),
-    )
-)
+st.subheader("Let's visualize the predictions")
 
-fig.update_layout(shapes=[dict(type= 'line', yref='y', y0= 0.5, y1= 0.5, xref= 'x', x0= -1, x1= 50)])
-fig.update_xaxes(automargin=True)
-st.plotly_chart(fig)
+fig = plt.figure(figsize=(15,6))
+plt.bar([i for i in range(50)], X[:50].preds, yerr=( X[:50].lower, X[:50].upper))
+plt.tight_layout()
+st.pyplot(fig)
